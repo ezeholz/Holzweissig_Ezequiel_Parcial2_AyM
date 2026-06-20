@@ -1,0 +1,187 @@
+:root {
+  --sidebar-width: 260px;
+  --sidebar-bg: #1e2b3c;
+  --sidebar-text: #a8b8cc;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-active: rgba(99, 179, 237, 0.18);
+  --sidebar-active-text: #63b3ed;
+  --topbar-height: 56px;
+  --accent: #3b82f6;
+}
+
+body {
+  background-color: #f0f4f8;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+#wrapper {
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: width 0.25s ease;
+}
+
+.sidebar-brand {
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(168, 184, 204, 0.5);
+  padding: 1rem 1rem 0.25rem 1rem;
+}
+
+.sidebar-link {
+  color: var(--sidebar-text);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: background 0.15s, color 0.15s;
+  font-size: 0.875rem;
+}
+
+.sidebar-link:hover {
+  background: var(--sidebar-hover);
+  color: #fff;
+}
+
+.sidebar-link.active {
+  background: var(--sidebar-active);
+  color: var(--sidebar-active-text);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.topbar {
+  height: var(--topbar-height);
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+#page-content {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.kpi-card {
+  border-radius: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.kpi-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1e2b3c;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.book-card {
+  border-radius: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.book-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.table th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.login-page {
+  background: linear-gradient(135deg, #1e2b3c 0%, #2d3f5e 50%, #1e2b3c 100%);
+}
+
+.login-card {
+  border-radius: 16px;
+}
+
+.risk-gauge {
+  position: relative;
+  display: inline-block;
+}
+
+.risk-percentage {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.2rem !important;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: fixed;
+    left: -var(--sidebar-width);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #999; }
