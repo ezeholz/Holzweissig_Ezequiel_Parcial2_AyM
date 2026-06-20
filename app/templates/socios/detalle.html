@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ socio.nombre_completo }} — BiblioApp{% endblock %}
+{% block page_title %}Detalle de socio{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h5 class="fw-bold mb-1">{{ socio.nombre_completo }}</h5>
+    <p class="text-muted mb-0 small">
+      {{ socio.tipo_documento }} {{ socio.nro_documento or '—' }} ·
+      Socio desde {{ socio.fecha_registro.strftime('%d/%m/%Y') }}
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('socios.editar', socio_id=socio.id) }}" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-pencil me-1"></i>Editar
+    </a>
+    {% if current_user.rol == 'admin' %}
+    <form method="POST" action="{{ url_for('socios.eliminar', socio_id=socio.id) }}"
+          onsubmit="return confirm('¿Eliminar este socio? Esta acción no se puede deshacer.')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-sm btn-outline-danger">
+        <i class="bi bi-trash me-1"></i>Eliminar
+      </button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('socios.index') }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Socios
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title text-muted fw-semibold mb-3">Datos personales</h6>
+        <dl class="row mb-0 small">
+          <dt class="col-5 text-muted">Email</dt>
+          <dd class="col-7">{{ socio.email }}</dd>
+          <dt class="col-5 text-muted">Teléfono</dt>
+          <dd class="col-7">{{ socio.telefono or '—' }}</dd>
+          <dt class="col-5 text-muted">Estado</dt>
+          <dd class="col-7">
+            <span class="badge bg-{{ 'success' if socio.estado == 'activo' else ('warning text-dark' if socio.estado == 'suspendido' else 'secondary') }}">
+              {{ socio.estado | capitalize }}
+            </span>
+          </dd>
+          <dt class="col-5 text-muted">Préstamos activos</dt>
+          <dd class="col-7">
+            <span class="fw-semibold">{{ socio.prestamos_activos }}</span> / 3 máx.
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white py-3">
+        <h6 class="mb-0 fw-semibold"><i class="bi bi-arrow-left-right me-2 text-muted"></i>Historial de préstamos</h6>
+      </div>
+      <div class="card-body p-0">
+        {% if historial %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">#</th>
+                <th>Libro</th>
+                <th>Préstamo</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th>Multa</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in historial %}
+              <tr>
+                <td class="ps-4 text-muted">{{ p.id }}</td>
+                <td>{{ p.ejemplar.libro.titulo | truncate(30) }}</td>
+                <td>{{ p.fecha_prestamo.strftime('%d/%m/%Y') }}</td>
+                <td>{{ p.fecha_vencimiento.strftime('%d/%m/%Y') }}</td>
+                <td>
+                  {% if p.estado == 'devuelto' %}<span class="badge bg-secondary">Devuelto</span>
+                  {% elif p.esta_vencido %}<span class="badge bg-danger">Vencido</span>
+                  {% else %}<span class="badge bg-success">Activo</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if p.multa %}
+                    <span class="text-{{ 'success' if p.multa.estado == 'pagada' else 'danger' }}">
+                      ${{ "%.0f"|format(p.multa.monto) }}
+                    </span>
+                  {% else %}—{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-4 small">Este socio no tiene préstamos registrados.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

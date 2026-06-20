@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión — BiblioApp{% endblock %}
+
+{% block public_content %}
+<div class="login-page d-flex align-items-center justify-content-center min-vh-100">
+  <div class="login-card card shadow-lg border-0" style="width: 420px;">
+
+    <div class="card-body p-5">
+      <div class="text-center mb-4">
+        <i class="bi bi-book-half display-4 text-primary"></i>
+        <h4 class="fw-bold mt-2 mb-0">BiblioApp</h4>
+        <p class="text-muted small">Sistema de Gestión de Biblioteca</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+          {{ form.email.label(class="form-label fw-semibold") }}
+          {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""),
+                        placeholder="usuario@biblioteca.com", autocomplete="email") }}
+          {% for err in form.email.errors %}
+            <div class="invalid-feedback">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.password.label(class="form-label fw-semibold") }}
+          <div class="input-group">
+            {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""),
+                             id="passwordInput", placeholder="••••••••") }}
+            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+              <i class="bi bi-eye" id="eyeIcon"></i>
+            </button>
+            {% for err in form.password.errors %}
+              <div class="invalid-feedback">{{ err }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="form-check">
+            {{ form.recordarme(class="form-check-input") }}
+            {{ form.recordarme.label(class="form-check-label text-muted small") }}
+          </div>
+        </div>
+
+        {{ form.submit(class="btn btn-primary w-100 fw-semibold") }}
+      </form>
+
+      <div class="accordion mt-4" id="defaultCredentialsSectionAccordion">
+        <div class="accordion-item rounded-3 overflow-hidden">
+          <h2 class="accordion-header" id="headingDefaultCredentialsSection">
+            <button
+              class="accordion-button collapsed fw-semibold"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseDefaultCredentialsSection"
+              aria-expanded="false"
+              aria-controls="collapseDefaultCredentialsSection"
+            >
+              Cuentas por defecto
+            </button>
+          </h2>
+          <div
+            id="collapseDefaultCredentialsSection"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingDefaultCredentialsSection"
+            data-bs-parent="#defaultCredentialsSectionAccordion"
+          >
+            <div class="accordion-body bg-light-subtle">
+              <div class="accordion accordion-flush small" id="defaultAccountsAccordion">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingAdmin">
+                    <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseAdmin">
+                      Administrador
+                    </button>
+                  </h2>
+                  <div id="collapseAdmin" class="accordion-collapse collapse" aria-labelledby="headingAdmin" data-bs-parent="#defaultAccountsAccordion">
+                    <div class="accordion-body py-2">
+                      <div><span class="text-muted">Email:</span> admin@biblioteca.com</div>
+                      <div><span class="text-muted">Contraseña:</span> admin123</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingBiblio">
+                    <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBiblio" aria-expanded="false" aria-controls="collapseBiblio">
+                      Bibliotecaria
+                    </button>
+                  </h2>
+                  <div id="collapseBiblio" class="accordion-collapse collapse" aria-labelledby="headingBiblio" data-bs-parent="#defaultAccountsAccordion">
+                    <div class="accordion-body py-2">
+                      <div><span class="text-muted">Email:</span> biblio@biblioteca.com</div>
+                      <div><span class="text-muted">Contraseña:</span> biblio123</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingSocios">
+                    <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSocios" aria-expanded="false" aria-controls="collapseSocios">
+                      Socios de prueba
+                    </button>
+                  </h2>
+                  <div id="collapseSocios" class="accordion-collapse collapse" aria-labelledby="headingSocios" data-bs-parent="#defaultAccountsAccordion">
+                    <div class="accordion-body py-2">
+                      <div><span class="text-muted">Emails:</span> carlos@mail.com, laura@mail.com, tomas@mail.com</div>
+                      <div><span class="text-muted">Contraseña:</span> socio123</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4" />
+      <p class="text-muted text-center small mb-0">
+        <i class="bi bi-shield-lock me-1"></i>
+        Acceso restringido al personal autorizado
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function togglePassword() {
+  const input = document.getElementById('passwordInput');
+  const icon = document.getElementById('eyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'bi bi-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'bi bi-eye';
+  }
+}
+</script>
+{% endblock %}

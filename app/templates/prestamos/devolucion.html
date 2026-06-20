@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Registrar devolución — BiblioApp{% endblock %}
+{% block page_title %}Registrar devolución{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="fw-bold mb-0">Confirmar devolución</h5>
+  <a href="{{ url_for('prestamos.index') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Volver
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm" style="max-width: 600px;">
+  <div class="card-body p-4">
+    <dl class="row mb-4">
+      <dt class="col-5 text-muted">Socio</dt>
+      <dd class="col-7 fw-semibold">{{ prestamo.socio.nombre_completo }}</dd>
+
+      <dt class="col-5 text-muted">Libro</dt>
+      <dd class="col-7">{{ prestamo.ejemplar.libro.titulo }}</dd>
+
+      <dt class="col-5 text-muted">Código ejemplar</dt>
+      <dd class="col-7 font-monospace small">{{ prestamo.ejemplar.codigo }}</dd>
+
+      <dt class="col-5 text-muted">Fecha de préstamo</dt>
+      <dd class="col-7">{{ prestamo.fecha_prestamo.strftime('%d/%m/%Y') }}</dd>
+
+      <dt class="col-5 text-muted">Fecha de vencimiento</dt>
+      <dd class="col-7">{{ prestamo.fecha_vencimiento.strftime('%d/%m/%Y') }}</dd>
+
+      <dt class="col-5 text-muted">Días de retraso</dt>
+      <dd class="col-7">
+        {% if prestamo.dias_retraso > 0 %}
+          <span class="text-danger fw-bold">{{ prestamo.dias_retraso }} días</span>
+        {% else %}
+          <span class="text-success">Sin retraso</span>
+        {% endif %}
+      </dd>
+
+      {% if prestamo.dias_retraso > 0 %}
+      <dt class="col-5 text-muted">Multa estimada</dt>
+      <dd class="col-7">
+        <span class="text-danger fw-bold">${{ "%.2f"|format(prestamo.monto_multa_calculado) }}</span>
+        <span class="text-muted small">({{ prestamo.dias_retraso }} días × $10/día)</span>
+      </dd>
+      {% endif %}
+    </dl>
+
+    {% if prestamo.dias_retraso > 0 %}
+    <div class="alert alert-warning small mb-4 d-flex gap-2">
+      <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+      <span>Este préstamo tiene <strong>{{ prestamo.dias_retraso }} días de retraso</strong>.
+      Al confirmar la devolución se generará una multa de
+      <strong>${{ "%.2f"|format(prestamo.monto_multa_calculado) }}</strong>.</span>
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="d-flex gap-2">
+        <a href="{{ url_for('prestamos.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+        {{ form.submit(class="btn btn-" + ("warning" if prestamo.dias_retraso > 0 else "success") + " px-4") }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

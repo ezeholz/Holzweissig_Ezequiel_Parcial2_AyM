@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }} — BiblioApp{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="fw-bold mb-0">{{ titulo }}</h5>
+  <a href="{{ url_for('socios.index') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Volver
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm" style="max-width: 680px;">
+  <div class="card-body p-4">
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="row g-3">
+        <div class="col-md-6">
+          {{ form.nombre.label(class="form-label fw-semibold") }}
+          {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else "")) }}
+          {% for e in form.nombre.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-md-6">
+          {{ form.apellido.label(class="form-label fw-semibold") }}
+          {{ form.apellido(class="form-control" + (" is-invalid" if form.apellido.errors else "")) }}
+          {% for e in form.apellido.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-12">
+          {{ form.email.label(class="form-label fw-semibold") }}
+          {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""),
+                        placeholder="email@dominio.com") }}
+          {% for e in form.email.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-md-4">
+          {{ form.tipo_documento.label(class="form-label fw-semibold") }}
+          {{ form.tipo_documento(class="form-select") }}
+        </div>
+        <div class="col-md-4">
+          {{ form.nro_documento.label(class="form-label fw-semibold") }}
+          {{ form.nro_documento(class="form-control", placeholder="Nro. de documento") }}
+        </div>
+        <div class="col-md-4">
+          {{ form.telefono.label(class="form-label fw-semibold") }}
+          {{ form.telefono(class="form-control", placeholder="11-XXXX-XXXX") }}
+        </div>
+        <div class="col-md-4">
+          {{ form.estado.label(class="form-label fw-semibold") }}
+          {{ form.estado(class="form-select") }}
+        </div>
+
+        <div class="col-12"><hr class="my-1"><p class="text-muted small mb-0">
+          Contraseña de acceso al sistema (dejar en blanco para mantener la actual)
+        </p></div>
+
+        <div class="col-md-6">
+          {{ form.password.label(class="form-label fw-semibold") }}
+          {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""),
+                           placeholder="Mínimo 6 caracteres") }}
+          {% for e in form.password.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-md-6">
+          {{ form.password_confirm.label(class="form-label fw-semibold") }}
+          {{ form.password_confirm(class="form-control" + (" is-invalid" if form.password_confirm.errors else "")) }}
+          {% for e in form.password_confirm.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="col-12 d-flex gap-2 justify-content-end pt-2">
+          <a href="{{ url_for('socios.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+          {{ form.submit(class="btn btn-primary px-4") }}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

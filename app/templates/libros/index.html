@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Catálogo — BiblioApp{% endblock %}
+{% block page_title %}Catálogo de libros{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="fw-bold mb-0">Catálogo bibliográfico</h5>
+  {% if current_user.rol in ('admin', 'bibliotecario') %}
+  <a href="{{ url_for('libros.crear') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> Nuevo libro
+  </a>
+  {% endif %}
+</div>
+
+<form method="GET" class="mb-4">
+  <div class="input-group" style="max-width: 450px;">
+    <input type="text" name="q" class="form-control" placeholder="Buscar por título, autor o ISBN…"
+           value="{{ q }}">
+    <button class="btn btn-outline-secondary" type="submit">
+      <i class="bi bi-search"></i>
+    </button>
+    {% if q %}
+    <a href="{{ url_for('libros.index') }}" class="btn btn-outline-danger">
+      <i class="bi bi-x-lg"></i>
+    </a>
+    {% endif %}
+  </div>
+</form>
+
+{% if libros %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+  {% for libro in libros %}
+  <div class="col">
+    <div class="card h-100 border-0 shadow-sm book-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="badge bg-light text-secondary border">{{ libro.genero or 'Sin género' }}</span>
+          {% if libro.ejemplares_disponibles > 0 %}
+            <span class="badge bg-success-subtle text-success border border-success-subtle">
+              <i class="bi bi-check-circle me-1"></i>Disponible
+            </span>
+          {% else %}
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+              <i class="bi bi-x-circle me-1"></i>No disponible
+            </span>
+          {% endif %}
+        </div>
+        <h6 class="card-title fw-semibold mb-1">
+          <a href="{{ url_for('libros.detalle', libro_id=libro.id) }}" class="text-dark text-decoration-none stretched-link">
+            {{ libro.titulo }}
+          </a>
+        </h6>
+        <p class="text-muted small mb-2">
+          <i class="bi bi-person me-1"></i>{{ libro.autor }}
+          {% if libro.anio_publicacion %}· {{ libro.anio_publicacion }}{% endif %}
+        </p>
+        <p class="small text-muted mb-0">
+          <i class="bi bi-collection me-1"></i>
+          {{ libro.total_ejemplares }} ejemplar{{ 'es' if libro.total_ejemplares != 1 }} ·
+          {{ libro.ejemplares_disponibles }} disponible{{ 's' if libro.ejemplares_disponibles != 1 }}
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="bi bi-search fs-1 d-block mb-2"></i>
+  {% if q %}
+    No se encontraron libros que coincidan con "<strong>{{ q }}</strong>".
+    <br><a href="{{ url_for('libros.index') }}">Ver todos los libros</a>
+  {% else %}
+    El catálogo está vacío. <a href="{{ url_for('libros.crear') }}">Agregar el primer libro</a>.
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

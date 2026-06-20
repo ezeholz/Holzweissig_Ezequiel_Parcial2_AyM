@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Nuevo préstamo — BiblioApp{% endblock %}
+{% block page_title %}Registrar préstamo{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="fw-bold mb-0">Registrar nuevo préstamo</h5>
+  <a href="{{ url_for('prestamos.index') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Volver
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm" style="max-width: 680px;">
+  <div class="card-body p-4">
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="mb-3">
+        {{ form.usuario_id.label(class="form-label fw-semibold") }}
+        {{ form.usuario_id(class="form-select" + (" is-invalid" if form.usuario_id.errors else "")) }}
+        {% for e in form.usuario_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        <div class="form-text">Formato: Apellido, Nombre — Documento</div>
+      </div>
+
+      <div class="mb-3">
+        {{ form.ejemplar_id.label(class="form-label fw-semibold") }}
+        {{ form.ejemplar_id(class="form-select" + (" is-invalid" if form.ejemplar_id.errors else "")) }}
+        {% for e in form.ejemplar_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        <div class="form-text">Solo se muestran ejemplares actualmente disponibles.</div>
+      </div>
+
+      <div class="mb-3">
+        {{ form.dias_prestamo.label(class="form-label fw-semibold") }}
+        {{ form.dias_prestamo(class="form-select" + (" is-invalid" if form.dias_prestamo.errors else "")) }}
+      </div>
+
+      <div class="mb-4">
+        {{ form.observaciones.label(class="form-label fw-semibold") }}
+        {{ form.observaciones(class="form-control", rows="2", placeholder="Observaciones opcionales…") }}
+      </div>
+
+      <div class="alert alert-info small mb-4 d-flex gap-2">
+        <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+        <span>Antes de registrar el préstamo, el sistema verificará que el socio no tenga multas pendientes
+        y no haya superado el límite de 3 préstamos simultáneos.</span>
+      </div>
+
+      <div class="d-flex gap-2 justify-content-end">
+        <a href="{{ url_for('prestamos.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+        {{ form.submit(class="btn btn-primary px-4") }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

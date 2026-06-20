@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}{{ libro.titulo }} — BiblioApp{% endblock %}
+{% block page_title %}Detalle del libro{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h5 class="fw-bold mb-1">{{ libro.titulo }}</h5>
+    <p class="text-muted mb-0">
+      <i class="bi bi-person me-1"></i>{{ libro.autor }}
+      {% if libro.editorial %} · <i class="bi bi-building me-1"></i>{{ libro.editorial }}{% endif %}
+      {% if libro.anio_publicacion %} · {{ libro.anio_publicacion }}{% endif %}
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    {% if current_user.rol in ('admin', 'bibliotecario') %}
+    <a href="{{ url_for('libros.editar', libro_id=libro.id) }}" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-pencil me-1"></i>Editar
+    </a>
+    <form method="POST" action="{{ url_for('libros.eliminar', libro_id=libro.id) }}"
+          onsubmit="return confirm('¿Eliminar este libro del catálogo?')">
+      {{ form_ejemplar.hidden_tag() }}
+      <button class="btn btn-sm btn-outline-danger">
+        <i class="bi bi-trash me-1"></i>Eliminar
+      </button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('libros.index') }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Catálogo
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <h6 class="card-title text-muted fw-semibold mb-3">Información bibliográfica</h6>
+        <dl class="row mb-0 small">
+          <dt class="col-5 text-muted">ISBN</dt>
+          <dd class="col-7">{{ libro.isbn or '—' }}</dd>
+          <dt class="col-5 text-muted">Género</dt>
+          <dd class="col-7">
+            {% if libro.genero %}
+              <span class="badge bg-light text-secondary border">{{ libro.genero }}</span>
+            {% else %}—{% endif %}
+          </dd>
+          <dt class="col-5 text-muted">Total ejemplares</dt>
+          <dd class="col-7">{{ libro.total_ejemplares }}</dd>
+          <dt class="col-5 text-muted">Disponibles</dt>
+          <dd class="col-7">
+            {% if libro.ejemplares_disponibles > 0 %}
+              <span class="text-success fw-semibold">{{ libro.ejemplares_disponibles }}</span>
+            {% else %}
+              <span class="text-danger fw-semibold">0</span>
+            {% endif %}
+          </dd>
+        </dl>
+        {% if libro.descripcion %}
+        <hr>
+        <p class="small text-muted mb-0">{{ libro.descripcion }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-semibold"><i class="bi bi-collection me-2 text-muted"></i>Ejemplares</h6>
+      </div>
+      <div class="card-body p-0">
+        {% set ejemplares = libro.ejemplares.all() %}
+        {% if ejemplares %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Código</th>
+                <th>Condición</th>
+                <th>Estado</th>
+                {% if current_user.rol in ('admin', 'bibliotecario') %}<th></th>{% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for ej in ejemplares %}
+              <tr>
+                <td class="ps-4 fw-semibold font-monospace small">{{ ej.codigo }}</td>
+                <td>
+                  <span class="badge bg-{{ 'success' if ej.condicion == 'bueno' else ('warning text-dark' if ej.condicion == 'regular' else 'danger') }}-subtle
+                                text-{{ 'success' if ej.condicion == 'bueno' else ('warning' if ej.condicion == 'regular' else 'danger') }}
+                                border border-{{ 'success' if ej.condicion == 'bueno' else ('warning' if ej.condicion == 'regular' else 'danger') }}-subtle">
+                    {{ ej.condicion | capitalize }}
+                  </span>
+                </td>
+                <td>
+                  {% if ej.estado == 'disponible' %}
+                    <span class="badge bg-success">Disponible</span>
+                  {% elif ej.estado == 'prestado' %}
+                    <span class="badge bg-warning text-dark">Prestado</span>
+                  {% elif ej.estado == 'reservado' %}
+                    <span class="badge bg-info">Reservado</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ ej.estado | capitalize }}</span>
+                  {% endif %}
+                </td>
+                {% if current_user.rol in ('admin', 'bibliotecario') %}
+                <td class="text-end pe-4">
+                  <form method="POST" action="{{ url_for('libros.eliminar_ejemplar', ejemplar_id=ej.id) }}"
+                        onsubmit="return confirm('¿Eliminar este ejemplar?')">
+                    {{ form_ejemplar.hidden_tag() }}
+                    <button class="btn btn-sm btn-link text-danger p-0" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-4 small">No hay ejemplares registrados.</div>
+        {% endif %}
+      </div>
+
+      {% if current_user.rol in ('admin', 'bibliotecario') %}
+      <div class="card-footer bg-white py-3">
+        <form method="POST" action="{{ url_for('libros.agregar_ejemplar', libro_id=libro.id) }}"
+              class="row g-2 align-items-end">
+          {{ form_ejemplar.hidden_tag() }}
+          <div class="col-auto">
+            {{ form_ejemplar.codigo(class="form-control form-control-sm", placeholder="Código del ejemplar") }}
+          </div>
+          <div class="col-auto">
+            {{ form_ejemplar.condicion(class="form-select form-select-sm") }}
+          </div>
+          <div class="col-auto">
+            {{ form_ejemplar.submit(class="btn btn-sm btn-success") }}
+          </div>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

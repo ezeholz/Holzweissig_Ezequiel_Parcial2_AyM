@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Préstamos — BiblioApp{% endblock %}
+{% block page_title %}Gestión de préstamos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h5 class="fw-bold mb-0">Préstamos</h5>
+  {% if current_user.rol in ('admin', 'bibliotecario') %}
+  <a href="{{ url_for('prestamos.crear') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> Nuevo préstamo
+  </a>
+  {% endif %}
+</div>
+
+<ul class="nav nav-pills mb-4">
+  {% for estado in ['activo', 'devuelto', 'vencido'] %}
+  <li class="nav-item">
+    <a href="{{ url_for('prestamos.index', estado=estado) }}"
+       class="nav-link {% if estado_filtro == estado %}active{% endif %}">
+      {% if estado == 'activo' %}<i class="bi bi-check-circle me-1"></i>Activos
+      {% elif estado == 'devuelto' %}<i class="bi bi-box-arrow-in-left me-1"></i>Devueltos
+      {% else %}<i class="bi bi-clock-history me-1"></i>Vencidos{% endif %}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    {% if prestamos %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">#</th>
+            <th>Socio</th>
+            <th>Libro</th>
+            <th>Ejemplar</th>
+            <th>Préstamo</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
+            {% if current_user.rol in ('admin', 'bibliotecario') %}<th></th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in prestamos %}
+          <tr>
+            <td class="ps-4 text-muted small">{{ p.id }}</td>
+            <td>
+              <div class="fw-semibold">{{ p.socio.nombre_completo }}</div>
+              <div class="small text-muted">{{ p.socio.nro_documento }}</div>
+            </td>
+            <td>
+              <a href="{{ url_for('libros.detalle', libro_id=p.ejemplar.libro_id) }}"
+                 class="text-dark text-decoration-none">
+                {{ p.ejemplar.libro.titulo | truncate(35) }}
+              </a>
+            </td>
+            <td class="font-monospace small">{{ p.ejemplar.codigo }}</td>
+            <td class="small">{{ p.fecha_prestamo.strftime('%d/%m/%Y') }}</td>
+            <td class="small">
+              {{ p.fecha_vencimiento.strftime('%d/%m/%Y') }}
+              {% if p.esta_vencido %}
+                <br><span class="badge bg-danger">{{ p.dias_retraso }}d de retraso</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if p.estado == 'activo' and p.esta_vencido %}
+                <span class="badge bg-danger">Vencido</span>
+              {% elif p.estado == 'activo' %}
+                <span class="badge bg-success">Activo</span>
+              {% elif p.estado == 'devuelto' %}
+                <span class="badge bg-secondary">Devuelto</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">{{ p.estado | capitalize }}</span>
+              {% endif %}
+            </td>
+            {% if current_user.rol in ('admin', 'bibliotecario') %}
+            <td class="pe-4">
+              {% if p.estado != 'devuelto' %}
+              <a href="{{ url_for('prestamos.devolver', prestamo_id=p.id) }}"
+                 class="btn btn-sm btn-outline-success">
+                <i class="bi bi-box-arrow-in-left me-1"></i>Devolver
+              </a>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+      No hay préstamos con estado "{{ estado_filtro }}".
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
