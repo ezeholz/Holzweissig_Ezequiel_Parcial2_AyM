@@ -13,8 +13,10 @@ def create_app() -> Flask:
     csrf.init_app(app)
 
     from .blueprints.auth import auth_bp
+    from .blueprints.libros import libros_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(libros_bp, url_prefix="/libros")
 
     @app.errorhandler(403)
     def forbidden(e):
