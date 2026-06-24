@@ -12,11 +12,13 @@ def create_app() -> Flask:
     login_manager.init_app(app)
     csrf.init_app(app)
 
+    from .blueprints.main import main_bp
     from .blueprints.auth import auth_bp
     from .blueprints.libros import libros_bp
     from .blueprints.socios import socios_bp
     from .blueprints.prestamos import prestamos_bp
 
+    app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(libros_bp, url_prefix="/libros")
     app.register_blueprint(socios_bp, url_prefix="/socios")
